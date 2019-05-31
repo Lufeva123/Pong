@@ -5,6 +5,7 @@ from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 from kivy.uix.popup import Popup
+from kivy.core.audio import SoundLoader
 
 import time
 
@@ -12,6 +13,7 @@ import time
 # Class that represents a paddle
 class Paddle(Widget):
     score = NumericProperty(0)
+    pong_sound = SoundLoader.load("sounds/pong_sound.wav")
 
     # Method that checks if a collision between the ball and this paddle happened
     # and changes the ball's velocity based on where the ball hit the paddle
@@ -20,6 +22,7 @@ class Paddle(Widget):
             offset = (ball.center_y - self.center_y) / (self.height/2)
             ball.x_velocity *= -1.15
             ball.y_velocity = (ball.y_velocity * 1.15) + offset
+            self.pong_sound.play()
 
     # Method that sets this paddle's score to zero
     def reset_score(self):

@@ -1,0 +1,206 @@
+<MenuButton@Button>:
+    font_size: "50sp"
+    color: 1, 1, 1, 1
+    size_hint: None, None
+
+<EndOfGamePopup>:
+    title: "End of Game"
+    title_color: 1, 1, 1, 1
+    auto_dismiss: False
+    size_hint: .5, .5
+
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            text: root.winner + " WON!"
+            color: 1, 1, 1, 1
+            font_size: "20sp"
+
+        RelativeLayout:
+            size_hint: 1, 0.2
+            spacing: 10
+
+            Button:
+                size_hint: 0.3, 1
+                pos_hint: {"right" : 0.5 , "center_y" : 0.5}
+                on_release:
+                    root.dismiss()
+                    app.screen_manager.current_screen.start_game()
+                Image:
+                    source: "images/restart_icon.png"
+                    pos_hint: {"x" : None, "y" : None}
+                    center: self.parent.center
+                    allow_stretch: True
+                    keep_ratio: True
+                    size_hint_y: None
+                    size_hint_x: None
+                    width: self.parent.width * 0.8
+                    height: self.parent.height * 0.8
+
+            Button:
+                text: "Menu"
+                color: 1, 1, 1, 1
+                font_size: "20sp"
+                size_hint: 0.3, 1
+                pos_hint: {"x" : 0.5, "center_y" : 0.5}
+                on_release:
+                    root.dismiss()
+                    app.screen_manager.current = "main_menu"
+
+<PausePopup>:
+    title: "Pong"
+    title_color: 1, 1, 1, 1
+    auto_dismiss: False
+    size_hint: .5, .5
+
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            text: "Game Paused"
+            color: 1, 1, 1, 1
+            font_size: "20sp"
+
+        RelativeLayout:
+            size_hint: 1, 0.2
+            spacing: 10
+
+            Button:
+                size_hint: 0.3, 1
+                pos_hint: {"right" : 0.5 , "center_y" : 0.5}
+                on_release:
+                    root.dismiss()
+                    app.screen_manager.current_screen.start_game()
+                Image:
+                    source: "images/restart_icon.png"
+                    pos_hint: {"x" : None, "y" : None}
+                    center: self.parent.center
+                    allow_stretch: True
+                    keep_ratio: True
+                    size_hint_y: None
+                    size_hint_x: None
+                    width: self.parent.width * 0.8
+                    height: self.parent.height * 0.8
+
+            Button:
+                size_hint: 0.3, 1
+                pos_hint: {"x" : 0.5, "center_y" : 0.5}
+                on_release:
+                    root.dismiss()
+                    app.screen_manager.current_screen.continue_game()
+                Image:
+                    source: "images/continue_icon.png"
+                    pos_hint: {"x" : None, "y" : None}
+                    center: self.parent.center
+                    allow_stretch: True
+                    keep_ratio: True
+                    size_hint_y: None
+                    size_hint_x: None
+                    width: self.parent.width * 0.8
+                    height: self.parent.height * 0.8
+
+<Paddle>:
+    canvas:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Ball>:
+    canvas:
+        Ellipse:
+            pos: self.pos
+            size: self.size
+
+<ScoreLabel@Label>:
+    font_size: 80
+    color: 0.4, 0.4, 0.4, 1
+
+<MainMenuScreen>:
+
+    RelativeLayout:
+
+        Label:
+            text: "PONG"
+            color: 1, 1, 1, 1
+            font_size: "100sp"
+            size_hint_y: None
+            size: root.width, self.texture_size[1]
+            center: root.width/2, root.height*(3/4)
+
+        MenuButton:
+            text: "Play"
+            width: "500sp"
+            height: "100sp"
+            center: root.width/2, root.height/2
+            on_release:
+                root.manager.current = "game_screen"
+
+<GameScreen>:
+    id: game_screen
+    player_left: paddle_1
+    player_right: paddle_2
+    ball: pong_ball
+    arena: arena
+    winning_score: 3
+
+    ActionBar:
+        pos_hint: {"top": 1}
+        ActionView:
+            use_separator: True
+            ActionPrevious:
+                with_previous: False
+                app_icon: "images/pong_icon.png"
+                size_hint: 0.8, 0.8
+                on_release: root.manager.current = "main_menu"
+            ActionButton:
+                on_release: root.open_pause_popup()
+                Image:
+                    source: "images/pause_icon.png"
+                    pos_hint: {"x" : None, "y" : None}
+                    center: self.parent.center
+                    allow_stretch: True
+                    keep_ratio: True
+                    size_hint_y: None
+                    size_hint_x: None
+                    width: self.parent.width * 0.6
+                    height: self.parent.height * 0.6
+
+    PongArena:
+        id: arena
+        padding: 10
+
+        canvas:
+            Line:
+                points: arena.center_x, arena.top, arena.center_x, arena.y
+
+        Paddle:
+            id: paddle_1
+            size: arena.width/40, arena.width/10
+            x: arena.x
+            center_y: arena.center_y
+
+        Paddle:
+            id: paddle_2
+            size: arena.width/40, arena.width/10
+            x: arena.width - self.width
+            center_y: arena.center_y
+
+        Ball:
+            id: pong_ball
+            size: arena.width/40, arena.width/40
+            center: arena.center
+
+        ScoreLabel:
+            id: score_right
+            color: 0.8, 0.8, 0.8, 1
+            center_x: arena.width/4
+            top: arena.top - 50
+            text: str(root.player_left.score)
+
+        ScoreLabel:
+            id: score_left
+            color: 0.8, 0.8, 0.8, 1
+            center_x: 3*arena.width/4
+            top: arena.top - 50
+            text: str(root.player_right.score)
